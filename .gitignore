@@ -1,0 +1,6 @@
+.gdb_history
+*.swp
+*.o
+core
+monchester
+xboard.debug
