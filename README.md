@@ -1,5 +1,7 @@
 # Monchester
 
+![Carved pumpkin with huge teeth and M shaped eyes, glowing from inside.](https://github.com/unserializable/monchester/raw/master/logos/monchester-logo-1-small.jpg)
+
 Happy Halloween 2020! The origins of this little chess engine date back to
 16th October 2002 and it has just recently risen from the grave. It plays
 strictly on scholastic chess level in 1.0 version and demonstrates that often
