@@ -3,4 +3,6 @@
 *.o
 core
 monchester
+dox/
+libchest.a
 xboard.debug
