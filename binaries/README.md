@@ -8,3 +8,5 @@ need access to release source code then these bundles are at:
 And if you more specifically are looking to work with code, then look at:
 
   https://github.com/unserializable/monchester/branches
+
+* Windows binaries for version 1.0 provided by Günther Simon of RWBC (https://rwbc-chess.de/)
