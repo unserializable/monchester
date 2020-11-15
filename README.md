@@ -63,7 +63,7 @@ in ``1.0`` then there will be tag like ``1.0.1`` created on the same branch.
 ## Compilation
 
 The program should compile under Linux and Mac OS X and has been reported to
-compile under Windows using (MSYS2)[https://www.msys2.org/]. Precondition is
+compile under Windows using [MSYS2](https://www.msys2.org/). Precondition is
 presence of ``make`` and ``gcc`` C-compiler or compatible compiler symlinked
 as ``gcc`` (clang) -- in all my computers clang produces MUCH faster binary
 than ``gcc``. Compiler can also be changed by passing ``make CC=some_compiler``
@@ -74,6 +74,7 @@ argument to make.
 
 ### Build with simplest command line using available ``gcc``
   * ``make clean release``
+  * or simply ``make`` if there are no old files to clean
 
 ## Features
   * Full FIDE rules for standard chess (castling, en passant, check and stalemate,
