@@ -11,6 +11,13 @@ CFLAGS = -DDEBUG=1 -DDEBUG_EVAL=1 -g -Wformat -Wstrict-prototypes -Wall -fsaniti
 CFLAGS += -DMONCHESTER_VERSION="1.0"
 CFLAGS += $(EXTFLAGS)
 
+# Issue #1@GH -- use 'release' as the default 'make' target
+release: CFLAGS=-DNDEBUG -Os -Wformat -Wstrict-prototypes -Wall $(GCC7FLAGS)
+release: CFLAGS += -DMONCHESTER_VERSION="1.0"
+release: CFLAGS += $(EXTFLAGS)
+release: monchester
+
+# Debug build target
 monchester: main.c features.h xtdlib.h types.h fen.h globals.h iomain.h move.h brdlist.h compmove.h $(OBJS)
 	$(CC) $(CFLAGS) main.c -o monchester $(OBJS)
 
@@ -34,11 +41,6 @@ compmove.o: compmove.c compmove.h features.h types.h iomain.h move.h globals.h x
 
 fen.o: fen.c move.h features.h types.h fen.h xtdlib.h globals.h
 	$(CC) $(CFLAGS) -c fen.c
-
-release: CFLAGS=-DNDEBUG -Os -Wformat -Wstrict-prototypes -Wall $(GCC7FLAGS)
-release: CFLAGS += -DMONCHESTER_VERSION="1.0"
-release: CFLAGS += $(EXTFLAGS)
-release: monchester
 
 clean:
 	rm -f monchester *.o core
