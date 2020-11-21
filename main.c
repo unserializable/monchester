@@ -73,6 +73,16 @@ void init_engine_nps(void) {
 	g_nodecount = 0;
 }
 
+uint32_t random_seed(void) {
+	struct timeval tv;
+	uint32_t ms;
+	do {
+		gettimeofday(&tv, NULL);
+		ms = tv.tv_sec * UINT32_C(1000) + (tv.tv_usec / UINT32_C(1000));
+	} while (!ms);
+	return ms;
+}
+
 #define OPT_PREFIX "--"
 #define OPT_PREFIX_LEN (sizeof(OPT_PREFIX)-1)
 #define OPT_END OPT_PREFIX
@@ -248,14 +258,33 @@ void command_new(void)
 		g_players[0].name = xstrdup(g_cecp_conf.opp_name ? g_cecp_conf.opp_name : "");
 		g_players[1].type = Computer;
 		g_players[1].name = program_name_and_version();
+#if !FEATURE_FORCE_SCORE_RANDOMIZATION
 		g_cecp_conf.randomize_moves = false;
 		g_cecp_conf.minstd_last = g_cecp_conf.minstd;
 		g_cecp_conf.minstd = 0; /* CECP_DEFAULT_MINSTD */
+#endif /* !FEATURE_FORCE_SCORE_RANDOMIZATION */
 		/* reset any search depth limit previously set by CECP sd command. */
 		g_engine_conf.depth_max = g_engine_defaults.depth_max;
 		g_engine_conf.depth_default = g_engine_defaults.depth_default;
 	}
 	g_gamestate = GAME_IN_PROGRESS;
+}
+
+void command_random(void)
+{
+	/* Only toggle randomization, if it is not forced (#100, GH#3).*/
+#if !FEATURE_FORCE_SCORE_RANDOMIZATION
+	g_cecp_conf.randomize_moves = !g_cecp_conf.randomize_moves;
+	if (!g_cecp_conf.randomize_moves) {
+		g_cecp_conf.minstd_last = g_cecp_conf.minstd;
+		g_cecp_conf.minstd = 0; /* CECP_DEFAULT_MINSTD */
+		return;
+	}
+
+	g_cecp_conf.minstd = g_cecp_conf.minstd_last;
+	if (!g_cecp_conf.minstd)
+		g_cecp_conf.minstd = random_seed();
+#endif /* !FEATURE_FORCE_SCORE_RANDOMIZATION */
 }
 
 int main(int argc, const char *argv[])
@@ -269,6 +298,10 @@ int main(int argc, const char *argv[])
 
 	init_engine_nps();
 	printf("# %s %s ~(%ju kN/s)\n", PROGRAM_NAME, PROGRAM_FULL_VERSION, g_engine_nps / 1000);
+
+#if FEATURE_FORCE_SCORE_RANDOMIZATION
+	g_cecp_conf.minstd = random_seed();
+#endif /* FEATURE_FORCE_SCORE_RANDOMIZATION */
 
 	while (1) {
 		if (g_gamestate == GAME_IN_PROGRESS) {
@@ -497,24 +530,7 @@ int main(int argc, const char *argv[])
 		}
 		else if (!strcmp(command, "random") && g_cecp) {
 			xfree(command);
-			g_cecp_conf.randomize_moves = !g_cecp_conf.randomize_moves;
-			if (!g_cecp_conf.randomize_moves) {
-				g_cecp_conf.minstd_last = g_cecp_conf.minstd;
-				g_cecp_conf.minstd = 0; /* CECP_DEFAULT_MINSTD */
-				continue;
-			}
-
-			g_cecp_conf.minstd = g_cecp_conf.minstd_last;
-			if (!g_cecp_conf.minstd) {
-				struct timeval tv;
-				uint32_t ms;
-				do {
-					gettimeofday(&tv, NULL);
-					ms = tv.tv_sec * UINT32_C(1000) + (tv.tv_usec / UINT32_C(1000));
-				} while (!ms);
-				g_cecp_conf.minstd = ms;
-			}
-
+			command_random();
 			continue;
 		}
 		else if (!strncmp(command, "accepted", 8) && g_cecp) {

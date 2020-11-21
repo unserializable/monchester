@@ -60,6 +60,7 @@ int32_t static_score(const struct BoardState *Board, Color judged)
   #endif
   #define SCORE_RANDOM_HALF ((UINT32_C(1) << (SCORE_RANDOM_BITS - 1)))
 	score += (INT32_C(SCORE_RANDOM_HALF) - (CHMINSTD_NXT_BITS(g_cecp_conf.minstd, SCORE_RANDOM_BITS)));
+  #undef SCORE_RANDOM_HALF
 #endif
 
 	return score;
