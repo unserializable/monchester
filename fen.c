@@ -174,12 +174,26 @@ struct BoardState* FEN2Board(const char *fen) {
 		bs.Board[i^56] = c;
 	}
 
+	/* Be lenient, but require both kings ... (#97, GH#2) */
+	int kc[2] = {0, 0};
 	for (i = 0; i < 64; i++) {
 		char c = bs.Board[i];
 		if (IS_KNIGHT(c))
 			bs.pbonus[IS_BLACK(c)] += mKnight[i][0];
-		else if (IS_KING(c))
+		else if (IS_KING(c)) {
 			bs.king[IS_BLACK(c)] = i;
+			kc[IS_BLACK(c)]++;
+		}
+	}
+
+	if (1 != kc[0] || 1 != kc[1])
+		goto fenerror;
+
+	/* ... and NO pawns on 1st / 8th rank. (#97, GH#2) */
+	for (i = 0; i < 8; i++) {
+		char p1 = bs.Board[i], p8 = bs.Board[i+56];
+		if (IS_PAWN(p1) || IS_PAWN(p8))
+			goto fenerror;
 	}
 
 	if (!strcmp("w", f[1])) {
