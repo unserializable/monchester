@@ -50,7 +50,7 @@ must be denoted by following lowercase letter, e.g. ``e7e8q``.
 
 If used as engine via CECP (XBoard) protocol, the standard engine installation
 procedures should apply. In case of XBoard, it can also used from command line
-simply with ``xboard -fcp location-of-monchester-binary``.
+simply with ``xboard -fcp location-of-monchester-binary`` (for example: ``xboard -fcp ./monchester``).
 
 ## Repository structure
 
