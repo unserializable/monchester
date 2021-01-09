@@ -196,6 +196,10 @@ struct BoardState* FEN2Board(const char *fen) {
 			goto fenerror;
 	}
 
+	/* ... and <= 16 pieces for side (#103, GH#6) */
+	if (bs.pCount[0] > 16 || bs.pCount[1] > 16)
+		goto fenerror;
+
 	if (!strcmp("w", f[1])) {
 		bs.Active = White;
 	} else if (!strcmp("b", f[1])) {
