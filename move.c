@@ -1015,9 +1015,21 @@ int8_t exposes(struct BoardState *bs, const int8_t tsq, const uint8_t from, cons
 
 	/* Mutation, exposure check, restoration. */
 	char pc = bs->Board[from];
+	char ep_victim = NONE;
 	bs->Board[from] = NONE;
+
+	if (IS_PAWN(pc) && to == bs->epTarget) { /* #98, GH#7 */
+		int8_t epkill_sq = EP_VICTIM_SQ(bs->epTarget);
+		if (IS_CARDINAL(epkill_sq, tsq)) {
+			ep_victim = bs->Board[epkill_sq];
+			bs->Board[epkill_sq] = NONE;
+		}
+	}
+
 	int8_t exposure = diratk(bs, expdir, tsq);
 	bs->Board[from] = pc;
+	if (ep_victim)
+		bs->Board[EP_VICTIM_SQ(bs->epTarget)] = ep_victim;
 
 	return exposure;
 }
