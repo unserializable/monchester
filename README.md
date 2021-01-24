@@ -13,7 +13,8 @@ Downloadable source code release archives created so far are all listed in
 [release section](https://github.com/unserializable/monchester/releases/).
 
 In GitHub, the ``master`` branch is strictly for README and pre-compiled
-binaries. Code is in branches named ``X.Y-branch`` and releases are created from
+[binaries](https://github.com/unserializable/monchester/tree/master/binaries).
+Code is in branches named ``X.Y-branch`` and releases are created from
 suitable tags, e.g. for 1.0 there is ``1.0-branch`` where there is ``1.0`` tag
 from which source code release is created -- and when there is bugfix release
 in ``1.0`` then there will be tag like ``1.0.1`` created on the same branch.
