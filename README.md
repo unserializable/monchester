@@ -7,6 +7,17 @@ Happy Halloween 2020! The origins of this little chess engine date back to
 strictly on scholastic chess level in 1.0 version and demonstrates that often
 the way to win is not making really good moves, but just avoiding bad ones :)
 
+## Repository structure
+
+Downloadable source code release archives created so far are all listed in
+[release section](https://github.com/unserializable/monchester/releases/).
+
+In GitHub, the ``master`` branch is strictly for README and pre-compiled
+binaries. Code is in branches named ``X.Y-branch`` and releases are created from
+suitable tags, e.g. for 1.0 there is ``1.0-branch`` where there is ``1.0`` tag
+from which source code release is created -- and when there is bugfix release
+in ``1.0`` then there will be tag like ``1.0.1`` created on the same branch.
+
 ## About
 This is a basic chess engine (in C) that is able to play game from console and
 via CECP (XBoard) protocol. It should perform on the level suitable mostly
@@ -52,14 +63,6 @@ If used as engine via CECP (XBoard) protocol, the standard engine installation
 procedures should apply. Or to set active engine from the command line, specify
 the *first chess program* location, e.g. for XBoard, with Monchester binary
 located in current folder: ``xboard -fcp ./monchester``.
-
-## Repository structure
-
-In GitHub, the ``master`` branch is strictly for README and pre-compiled
-binaries. Code is in branches named ``X.Y-branch`` and releases are created from
-suitable tags, e.g. for 1.0 there is ``1.0-branch`` where there is ``1.0`` tag
-from which source code release is created -- and when there is bugfix release
-in ``1.0`` then there will be tag like ``1.0.1`` created on the same branch.
 
 ## Compilation
 
