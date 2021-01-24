@@ -49,8 +49,9 @@ moves must be entered in full algebraic coordinates, e.g. ``e2e4``, promotions
 must be denoted by following lowercase letter, e.g. ``e7e8q``.
 
 If used as engine via CECP (XBoard) protocol, the standard engine installation
-procedures should apply. In case of XBoard, it can also used from command line
-simply with ``xboard -fcp location-of-monchester-binary``.
+procedures should apply. Or to set active engine from the command line, specify
+the *first chess program* location, e.g. for XBoard, with Monchester binary
+located in current folder: ``xboard -fcp ./monchester``.
 
 ## Repository structure
 
