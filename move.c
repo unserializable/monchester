@@ -337,7 +337,7 @@ int mvs_a(uint8_t (*dst)[16][30], struct BoardState *Board, const uint8_t *pvmov
 				bool kingmove = Board->king[Board->Active] == i;
 				uint8_t *moves = dst[0][piececount-1];
 				for (y = z = 0; y < j; y++) {
-					bool semisafe = (!capsblocks.len || memchr(capsblocks.sqs, moves[2+y], capsblocks.len));
+					bool semisafe = (!capsblocks.len || memchr(capsblocks.sqs, /* #104, GH#8 */ PROMOTIONLESS(moves[2+y]), capsblocks.len));
 					semisafe = semisafe || /* isfckep that removes check */
 						((moves[2+y] == Board->epTarget) && (IS_PAWN(Board->Board[i])) &&
 						memchr(capsblocks.sqs, EP_VICTIM_SQ(Board->epTarget), capsblocks.len));
