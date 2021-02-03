@@ -239,6 +239,10 @@ struct BoardState* FEN2Board(const char *fen) {
 	bs.Moves = move;
 	bs.check = attacked_by(OPPONENT(bs.Active), bs.king[bs.Active], &bs);
 
+	/* Inactive king must not be in check, also accounts for touching kings (#108, GH #9). */
+	if (attacked_by(bs.Active, bs.king[OPPONENT(bs.Active)], &bs))
+		goto fenerror;
+
 	result = (struct BoardState *) xmalloc(sizeof(struct BoardState));
 	*result = bs;
 
