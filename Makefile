@@ -8,12 +8,12 @@ OBJS = globals.o iomain.o xtdlib.o move.o brdlist.o compmove.o fen.o
 
 ARFLAGS = rcsD
 CFLAGS = -DDEBUG=1 -DDEBUG_EVAL=1 -g -Wformat -Wstrict-prototypes -Wall -fsanitize=address $(GCC7FLAGS)
-CFLAGS += -DMONCHESTER_VERSION="1.0.1-10-ga46d14d"
+CFLAGS += -DMONCHESTER_VERSION="1.0.1-12-g1cb4dbd"
 CFLAGS += $(EXTFLAGS)
 
 # Issue #1@GH -- use 'release' as the default 'make' target
 release: CFLAGS=-DNDEBUG -Os -Wformat -Wstrict-prototypes -Wall $(GCC7FLAGS)
-release: CFLAGS += -DMONCHESTER_VERSION="1.0.1-10-ga46d14d"
+release: CFLAGS += -DMONCHESTER_VERSION="1.0.1-12-g1cb4dbd"
 release: CFLAGS += $(EXTFLAGS)
 release: monchester
 
