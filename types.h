@@ -39,6 +39,7 @@
 #define BLACKLOSE 10	/* black lost */
 #define WHITELOSE 1		/* white lost */
 #define DRAW 0			/* draw */
+#define UNFINISHED 44   /* unknown/unfinished */
 
 /* move legality types */
 #define VALID 1

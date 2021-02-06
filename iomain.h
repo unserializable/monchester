@@ -28,6 +28,7 @@
 
 void init_players(void);
 void print_board(FILE *, const struct BoardState *);
+void print_cmd_error(const char *, const char *);  /* #109, GH#10 */
 void print_pv(FILE *, const uint8_t *, int, int);
 void cecp_print_pv(const PV *, int32_t, clock_t);
 char *getln(FILE *);

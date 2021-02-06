@@ -122,7 +122,10 @@ void print_board(FILE *stream, const struct BoardState *Board)
 
 void print_help(void)
 {
+	if (g_cecp)
+		fputs("# ", stdout);
 	printf("commands understood: new, resign, help, bench, quit\n");
+	fflush(stdout);
 }
 
 void print_pv(FILE *stream, const uint8_t *pv, int depth, int score) {
@@ -139,6 +142,19 @@ void print_pv(FILE *stream, const uint8_t *pv, int depth, int score) {
 	}
 	fprintf(stream, " %d\n", score);
 	fflush(stream);
+}
+
+/* CECP-compliant command error reporting to stdout (#109, GH#10). */
+void print_cmd_error(const char *erred_cmd, const char *error_desc)
+{
+	fputs("Error", stdout);
+	if (error_desc)
+		printf(" (%s)", error_desc);
+	fputs(": ", stdout);
+	fputs(erred_cmd, stdout);
+	putchar('\n');
+
+	fflush(stdout);
 }
 
 void cecp_print_pv(const PV *pv, int32_t score, clock_t clock_start)

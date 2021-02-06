@@ -29,7 +29,7 @@ int32_t centipawn_score(int32_t);
 int32_t cecp_score(int32_t);
 char *program_name_and_version(void);
 char piece2SAN(char);
-intmax_t to_int(const char *const, intmax_t, intmax_t, bool die, const char *const);
+intmax_t to_int(const char *const, intmax_t, intmax_t, bool die, bool, const char *const);
 struct MoveCoords *parsed_move(const char *s);
 void to_algebraic(char *, struct EngineMove *, struct BoardState *);
 

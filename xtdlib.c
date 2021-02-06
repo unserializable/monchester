@@ -83,20 +83,27 @@ char piece2SAN(char piece) {
 
 /*	Converts cstring /s/ to integer in inclusive range [/min/../max/], optionally dying with /s_desc/
 	message if cstring /s/ does not fall into that range or is not numeric / decimal at all */
-intmax_t to_int(const char *const s, intmax_t min, intmax_t max, bool die, const char *const s_desc)
+intmax_t to_int(const char *const s, intmax_t min, intmax_t max, bool die, bool quiet, const char *const s_desc)
 {
 	errno = 0;
 	char *eptr;
 	intmax_t n = strtol(s, &eptr, 0);
 	if (errno || *eptr != '\0') {
-		fprintf(stderr, "%s", CONVERSION_FAILED_TEXT);
-		if (s_desc)
-			fprintf(stderr, " %s", s_desc);
-		fprintf(stderr, " '%s' to integer", s);
-		if (errno)
-			fprintf(stderr, " (%s)", strerror(errno));
-		fputs(".\n", stderr);
-		fflush(stderr);
+		if (!quiet) {
+			fprintf(stderr, "%s", CONVERSION_FAILED_TEXT);
+
+			if (s_desc)
+				fprintf(stderr, " %s", s_desc);
+
+			fprintf(stderr, " '%s' to integer", s);
+
+			if (errno)
+				fprintf(stderr, " (%s)", strerror(errno));
+
+			fputs(".\n", stderr);
+			fflush(stderr);
+		}
+
 
 		if (die)
 			exit(!errno ? EINVAL : errno);
@@ -106,10 +113,13 @@ intmax_t to_int(const char *const s, intmax_t min, intmax_t max, bool die, const
 	}
 
 	if (n < min || n > max) {
-		if (s_desc)
-			fprintf(stderr, "%s ", s_desc);
-		fprintf(stderr, "%jd out of %jd..%jd range\n", n, min, max);
-		fflush(stderr);
+		if (!quiet) {
+			if (s_desc)
+				fprintf(stderr, "%s ", s_desc);
+
+			fprintf(stderr, "%jd out of %jd..%jd range\n", n, min, max);
+			fflush(stderr);
+		}
 
 		if (die)
 			exit(!errno ? EINVAL : errno);

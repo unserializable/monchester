@@ -130,7 +130,9 @@ int g_outcome;		/* game outcome */
 /* STRING CONSTANTS #69 */
 const char *COMPILER_TEXT = "Compiler";
 const char *CONVERSION_FAILED_TEXT = "Could not convert";
-const char *UNKNOWN_COMMAND_TEXT = "Unrecognized command";
+const char *UNKNOWN_COMMAND_TEXT = "unknown command";
+const char *BAD_FORMAT_TEXT = "bad format";
+const char *NO_GAME_TEXT = "no game";
 const char *ILLEGAL_MOVE_TEXT = "Illegal move";
 
 const char *COLOR_TEXT[] = {
@@ -139,6 +141,7 @@ const char *COLOR_TEXT[] = {
 
 /* Score texts used in PGN and official notation. */
 const char *RESULT_DRAW_SCORE_TEXT = "1/2-1/2";
+const char *RESULT_UNFINISHED_SCORE_TEXT = "*";
 const char *RESULT_DECISIVE_SCORE_TEXT[] = {
 	"1-0", "0-1"
 };

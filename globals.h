@@ -87,10 +87,13 @@ extern int g_outcome;
 extern const char *COMPILER_TEXT;
 extern const char *CONVERSION_FAILED_TEXT;
 extern const char *UNKNOWN_COMMAND_TEXT;
+extern const char *BAD_FORMAT_TEXT;
+extern const char *NO_GAME_TEXT;
 extern const char *ILLEGAL_MOVE_TEXT;
 
 extern const char *COLOR_TEXT[];
 extern const char *RESULT_DRAW_SCORE_TEXT;
+extern const char *RESULT_UNFINISHED_SCORE_TEXT;
 extern const char *RESULT_DECISIVE_SCORE_TEXT[];
 
 extern const char *INSUFFICIENT_MATERIAL_TEXT;

@@ -17,6 +17,7 @@
 */
 
 #include "features.h"
+#include <assert.h>
 #include <errno.h>
 #include <inttypes.h>
 #include <limits.h>
@@ -110,7 +111,7 @@ void process_cmdline(int ca, const char *args[]) {
 			o_bench = ia;
 			if (ca > ia + 1) { /* depth? */
 				if (!IS_OPT(args[ia + 1])) {
-					bench_depth = to_int(args[ia + 1], 1, 16, true, NULL);
+					bench_depth = to_int(args[ia + 1], 1, 16, true, false, NULL);
 					bench_depth--;
 					ia++;
 
@@ -237,6 +238,46 @@ void command_protover_cecp(void)
 		PROGRAM_NAME, PROGRAM_FULL_VERSION
 	);
 	fflush(stdout);
+}
+
+/* Reaction upon receiving CECP 'result RESULT {COMMENT}' for ongoing game. */
+void command_result_cecp(const char *cmd)
+{
+	assert(!strncmp(cmd, "result", 6));
+
+	if (g_gamestate != GAME_IN_PROGRESS) {
+		print_cmd_error(cmd, NO_GAME_TEXT);
+		return;
+	}
+
+	size_t cmd_len = strlen(cmd);
+	if (*(cmd + 6) != ' ')
+		goto bad_result_cmd;
+
+	const char *cmd_end = cmd + cmd_len;
+	const char *cecp_result_start = cmd + 7;
+
+	if (cecp_result_start >= cmd_end)
+		goto bad_result_cmd;
+
+	if (!strncmp(cecp_result_start, RESULT_DECISIVE_SCORE_TEXT[White], strlen(RESULT_DECISIVE_SCORE_TEXT[White]))) {
+		g_outcome = BLACKLOSE;
+	} else if (!strncmp(cecp_result_start, RESULT_DECISIVE_SCORE_TEXT[Black], strlen(RESULT_DECISIVE_SCORE_TEXT[Black]))) {
+		g_outcome = WHITELOSE;
+	} else if (!strncmp(cecp_result_start, RESULT_DRAW_SCORE_TEXT, strlen(RESULT_DRAW_SCORE_TEXT))) {
+		g_outcome = DRAW;
+	} else if (!strncmp(cecp_result_start, RESULT_UNFINISHED_SCORE_TEXT, strlen(RESULT_UNFINISHED_SCORE_TEXT))) {
+		g_outcome = UNFINISHED;
+	} else {
+		goto bad_result_cmd;
+	}
+
+	/* CECP comment of the result is not used for anything ATM. */
+	g_gamestate = GAME_ENDED;
+	return;
+
+bad_result_cmd:
+	print_cmd_error(cmd, *(cmd + 6) == ' ' || cmd_len == 6 ? BAD_FORMAT_TEXT : UNKNOWN_COMMAND_TEXT);
 }
 
 /* Set up a new game from standard start position. */
@@ -396,7 +437,7 @@ int main(int argc, const char *argv[])
 				fprintf(pgnf, "[Date \"%d.%02d.%02d\"]\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday);
 				fprintf(pgnf, "[%s \"%s\"]\n", COLOR_TEXT[White], g_players[White].name);
 				fprintf(pgnf, "[%s \"%s\"]\n", COLOR_TEXT[Black], g_players[Black].name);
-				fprintf(pgnf, "[Result \"%s\"]\n", g_outcome == DRAW ? RESULT_DRAW_SCORE_TEXT : (g_outcome == BLACKLOSE ? "1-0" : "0-1"));
+				fprintf(pgnf, "[Result \"%s\"]\n", g_outcome == UNFINISHED ? RESULT_UNFINISHED_SCORE_TEXT : (g_outcome == DRAW ? RESULT_DRAW_SCORE_TEXT : (g_outcome == BLACKLOSE ? "1-0" : "0-1")));
 				if (!stdstartpos) {
 					fprintf(pgnf, "[Setup \"1\"]\n");
 					char *start_fen = Board2FEN(&fstbrd->State);
@@ -406,7 +447,7 @@ int main(int argc, const char *argv[])
 				fprintf(pgnf, "[%sType \"%s\"]\n", COLOR_TEXT[White], g_players[White].type == Computer ? "program" : "human");
 				fprintf(pgnf, "[%sType \"%s\"]\n\n", COLOR_TEXT[Black], g_players[Black].type == Computer ? "program" : "human");
 				print_boardlist_pgn(pgnf, CurrentBoard);
-				fprintf(pgnf, " %s\n\n", g_outcome == DRAW ? RESULT_DRAW_SCORE_TEXT : (g_outcome == BLACKLOSE ? "1-0" : "0-1"));
+				fprintf(pgnf, " %s\n\n", g_outcome == UNFINISHED ? RESULT_UNFINISHED_SCORE_TEXT : (g_outcome == DRAW ? RESULT_DRAW_SCORE_TEXT : (g_outcome == BLACKLOSE ? "1-0" : "0-1")));
 				fflush(pgnf);
 			}
 
@@ -502,31 +543,19 @@ int main(int argc, const char *argv[])
 			}
 		}
 		else if (g_cecp && !strncmp(command, "result", 6)) {
-			char *cmd_end = command + strlen(command);
-			char *cecp_result_start = command + 7;
-
-			if (cmd_end > cecp_result_start) {
-				const char *cecp_result_end = strchr(cecp_result_start, ' ');
-				if (cmd_end > cecp_result_end) {
-					int result_len = cecp_result_end - cecp_result_start;
-					if (!strncmp(cecp_result_start, RESULT_DECISIVE_SCORE_TEXT[White], result_len)) {
-						g_outcome = BLACKLOSE;
-					} else if (!strncmp(cecp_result_start, RESULT_DECISIVE_SCORE_TEXT[Black], result_len)) {
-						g_outcome = WHITELOSE;
-					} else if (!strncmp(cecp_result_start, RESULT_DRAW_SCORE_TEXT, result_len)) {
-						g_outcome = DRAW;
-					}
-				}
-				/* ignoring the comment of the result */
-			}
-
-			g_gamestate = GAME_ENDED;
+			command_result_cecp(command);
 		}
 		else if (!strcmp(command, "resign")) {
-			if (g_gamestate == GAME_IN_PROGRESS) {
+			/* Not a command relayed by CECP to engine. */
+			if (g_cecp) print_cmd_error(command, UNKNOWN_COMMAND_TEXT);
+			else if (g_gamestate == GAME_IN_PROGRESS) {
 				g_gamestate = GAME_ENDED;
 				g_outcome = (CurrentBoard->State.Active == White) ? WHITELOSE : BLACKLOSE;
+			} else {
+				print_cmd_error(command, NO_GAME_TEXT);
 			}
+			xfree(command);
+			continue;
 		}
 		else if (!strcmp(command, "random") && g_cecp) {
 			xfree(command);
@@ -539,6 +568,7 @@ int main(int argc, const char *argv[])
 		}
 
 		else if (!strcmp(command, "hint") && g_cecp) {
+			xfree(command);
 			struct EngineMove* hint = select_move(CurrentBoard, 1, NULL);
 			if (hint) {
 				char algebraic_move[6];
@@ -547,6 +577,7 @@ int main(int argc, const char *argv[])
 				fflush(stdout);
 				xfree_engine_move(hint);
 			}
+			continue;
 		}
 
 		else if (!strncmp(command, "time", 4) && g_cecp) {
@@ -626,12 +657,18 @@ int main(int argc, const char *argv[])
 		}
 
 		else if (!strncmp(command, "sd", 2) && g_cecp) {
-			intmax_t sd_limit = to_int(command + 2, 1, UINT16_MAX, true, NULL);
-			sd_limit--;
-			if (sd_limit > UINT8_MAX) sd_limit = UINT8_MAX;
-			g_engine_conf.depth_max = (uint8_t) sd_limit;
-			if (sd_limit < g_engine_conf.depth_default)
-				g_engine_conf.depth_default = sd_limit;
+			intmax_t sd_limit = to_int(command + 2, 1, UINT16_MAX, false, true, NULL);
+			if (!errno) {
+				sd_limit--;
+				if (sd_limit > UINT8_MAX) sd_limit = UINT8_MAX;
+				g_engine_conf.depth_max = (uint8_t) sd_limit;
+				if (sd_limit < g_engine_conf.depth_default)
+					g_engine_conf.depth_default = sd_limit;
+			} else {
+				print_cmd_error(command, UNKNOWN_COMMAND_TEXT);
+			}
+			xfree(command);
+			continue;
 		}
 
 		else if (!strcmp(command, "go") && g_cecp) {
@@ -661,12 +698,17 @@ int main(int argc, const char *argv[])
 			game_score_shown = false;
 			command_new();
 		} else if (!strcmp(command, "help")) {
-			print_help();
+			if (g_cecp) { /* Both reject it with compliant error message ... */
+				print_cmd_error(command, UNKNOWN_COMMAND_TEXT);
+			}
+			print_help(); /* ... and do support it, for rare people doing console speak. */
+			xfree(command);
+			continue;
 		} else if (g_gamestate == GAME_IN_PROGRESS) {
 			/* it's humans turn to move, check if input describes a move */
 			struct MoveCoords *coords = parsed_move(command);
 			if (coords == NULL) {
-				puts(UNKNOWN_COMMAND_TEXT);
+				print_cmd_error(command, UNKNOWN_COMMAND_TEXT);
 			} else if (strlen(command) != 5 &&
 					(((command[1] == '2' && command[3] == '1') || (command[1] == '7' && command[3] == '8'))) &&
 					PAWN == TO_WHITE(CurrentBoard->State.Board[(int)coords->from])
@@ -701,7 +743,7 @@ int main(int argc, const char *argv[])
 				xfree(coords);
 			}
 		} else
-			if (!g_cecp) puts(UNKNOWN_COMMAND_TEXT);
+			print_cmd_error(command, UNKNOWN_COMMAND_TEXT);
 		if (g_gamestate == GAME_IN_PROGRESS)
 			print_board(stdout, &CurrentBoard->State);
 		xfree(command);
