@@ -46,8 +46,22 @@ int32_t static_score(const struct BoardState *Board, Color judged)
 					break;
 				}
 
-			if (!has_pawn)
+			if (!has_pawn) /* KBK or KNK insufficent material draw. */
 				return 0;
+		} else { /* Major piece ending against sole king, (#65, GH#11). */
+			uint8_t lost_king = Board->king[score > 0 ? opc : judged];
+			int32_t lkcd = (
+				BOARD_RANK_ABS_DISTANCE(27 /* D4 */, lost_king) +
+				BOARD_FILE_ABS_DISTANCE(27 /* D4 */, lost_king) +
+				BOARD_RANK_ABS_DISTANCE(36 /* E5 */, lost_king) +
+				BOARD_FILE_ABS_DISTANCE(36 /* E5 */, lost_king)
+			);
+			int32_t kd = (
+				BOARD_RANK_ABS_DISTANCE(Board->king[0], Board->king[1]) +
+				BOARD_FILE_ABS_DISTANCE(Board->king[0], Board->king[1])
+			);
+
+			return score += (score / abs(score)) * (2*lkcd - 3*kd);
 		}
 	}
 
