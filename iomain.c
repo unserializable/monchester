@@ -27,6 +27,7 @@
 #include "types.h"
 #include "globals.h"
 #include "brdlist.h"
+#include "move.h"  /* init_board() */
 
 /* Reads one line from stream. */
 char *getln(FILE *stream)
@@ -189,6 +190,45 @@ void cecp_print_pv(const PV *pv, int32_t score, clock_t clock_start)
 
 		fflush(stdout);
 	}
+}
+
+void print_pgn(
+	FILE *stream, struct BoardStateList *end_board, int outcome,
+	const struct tm *tm, const struct PlayerInfo *white, const struct PlayerInfo *black)
+{
+	struct BoardState std_start;
+	init_board(&std_start);
+
+	struct BoardStateList *start_board = end_board;
+	while (start_board->LastBoard)
+		start_board = start_board->LastBoard;
+
+	bool is_std_start =
+		same_position(&start_board->State, &std_start) &&
+		start_board->State.iMoves == std_start.iMoves &&
+		start_board->State.Moves == std_start.Moves;
+
+	const char *pgn_result = (
+		outcome == UNFINISHED ? RESULT_UNFINISHED_SCORE_TEXT :
+			(outcome == DRAW ? RESULT_DRAW_SCORE_TEXT :
+				(outcome == BLACKLOSE ? "1-0" : "0-1"))
+	);
+
+	fprintf(stream, "[Date \"%d.%02d.%02d\"]\n", tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday);
+	fprintf(stream, "[%s \"%s\"]\n", COLOR_TEXT[White], white->name);
+	fprintf(stream, "[%s \"%s\"]\n", COLOR_TEXT[Black], black->name);
+	fprintf(stream, "[Result \"%s\"]\n", pgn_result);
+	if (!is_std_start) {
+		fprintf(stream, "[Setup \"1\"]\n");
+		char *start_fen = Board2FEN(&start_board->State);
+		fprintf(stream, "[FEN \"%s\"]\n", start_fen);
+		xfree(start_fen);
+	}
+	fprintf(stream, "[%sType \"%s\"]\n", COLOR_TEXT[White], white->type == Computer ? "program" : "human");
+	fprintf(stream, "[%sType \"%s\"]\n\n", COLOR_TEXT[Black], black->type == Computer ? "program" : "human");
+	print_boardlist_pgn(stream, end_board);
+	fprintf(stream, " %s\n\n", pgn_result);
+	fflush(stream);
 }
 
 /* Prepares for new game of chess on console, gathers players' info from stdin. */

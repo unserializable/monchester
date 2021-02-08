@@ -27,6 +27,7 @@
 #include "types.h"
 
 void init_players(void);
+void print_pgn(FILE *, struct BoardStateList *, int, const struct tm *, const struct PlayerInfo *, const struct PlayerInfo *);
 void print_board(FILE *, const struct BoardState *);
 void print_cmd_error(const char *, const char *);  /* #109, GH#10 */
 void print_pv(FILE *, const uint8_t *, int, int);

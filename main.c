@@ -422,33 +422,7 @@ int main(int argc, const char *argv[])
 				if (!tgtf[sc])
 					continue;
 
-				struct BoardState stdinitbrd;
-				init_board(&stdinitbrd);
-				struct BoardStateList *fstbrd = CurrentBoard;
-				while (fstbrd->LastBoard)
-					fstbrd = fstbrd->LastBoard;
-
-				bool stdstartpos =
-					same_position(&fstbrd->State, &stdinitbrd) &&
-					fstbrd->State.iMoves == stdinitbrd.iMoves &&
-					fstbrd->State.Moves == stdinitbrd.Moves;
-
-				FILE *pgnf = tgtf[sc];
-				fprintf(pgnf, "[Date \"%d.%02d.%02d\"]\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday);
-				fprintf(pgnf, "[%s \"%s\"]\n", COLOR_TEXT[White], g_players[White].name);
-				fprintf(pgnf, "[%s \"%s\"]\n", COLOR_TEXT[Black], g_players[Black].name);
-				fprintf(pgnf, "[Result \"%s\"]\n", g_outcome == UNFINISHED ? RESULT_UNFINISHED_SCORE_TEXT : (g_outcome == DRAW ? RESULT_DRAW_SCORE_TEXT : (g_outcome == BLACKLOSE ? "1-0" : "0-1")));
-				if (!stdstartpos) {
-					fprintf(pgnf, "[Setup \"1\"]\n");
-					char *start_fen = Board2FEN(&fstbrd->State);
-					fprintf(pgnf, "[FEN \"%s\"]\n", start_fen);
-					xfree(start_fen);
-				}
-				fprintf(pgnf, "[%sType \"%s\"]\n", COLOR_TEXT[White], g_players[White].type == Computer ? "program" : "human");
-				fprintf(pgnf, "[%sType \"%s\"]\n\n", COLOR_TEXT[Black], g_players[Black].type == Computer ? "program" : "human");
-				print_boardlist_pgn(pgnf, CurrentBoard);
-				fprintf(pgnf, " %s\n\n", g_outcome == UNFINISHED ? RESULT_UNFINISHED_SCORE_TEXT : (g_outcome == DRAW ? RESULT_DRAW_SCORE_TEXT : (g_outcome == BLACKLOSE ? "1-0" : "0-1")));
-				fflush(pgnf);
+				print_pgn(tgtf[sc], CurrentBoard, g_outcome, &tm, &g_players[White], &g_players[Black]);
 			}
 
 #if FEATURE_KEEP_GAMESCORES
