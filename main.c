@@ -519,6 +519,13 @@ int main(int argc, const char *argv[])
 		else if (g_cecp && !strncmp(command, "result", 6)) {
 			command_result_cecp(command);
 		}
+		else if (g_cecp && !strcmp(command, "?")) { /* #111, GH#13 */
+			if (g_gamestate != GAME_IN_PROGRESS) {
+				print_cmd_error(command, NO_GAME_TEXT);
+			}
+			xfree(command);
+			continue; /* Move already sent. */
+		}
 		else if (!strcmp(command, "resign")) {
 			/* Not a command relayed by CECP to engine. */
 			if (g_cecp) print_cmd_error(command, UNKNOWN_COMMAND_TEXT);
@@ -537,6 +544,18 @@ int main(int argc, const char *argv[])
 			continue;
 		}
 		else if (!strncmp(command, "accepted", 8) && g_cecp) {
+			xfree(command);
+			continue;
+		}
+		else if (!strncmp(command, "rejected", 8) && g_cecp) { /* #111, GH#13 */
+			/*
+				This command is only sent by protocol version 2 interfaces. For them,
+				rejections concern currently interface-to-engine features that are
+				deprecated anyway and not supported (for CuteChess 1.2.0 'edit', 'colors',
+				'sigint', 'sigterm'). So interfaces will not be even trying to use these
+				and separate accounting is not needed. This might change when some optional
+				engine-to-interface command is implemented.
+			*/
 			xfree(command);
 			continue;
 		}
