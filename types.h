@@ -77,11 +77,11 @@
 #define PROMOTIONLESS(sq) ((sq) & 63)
 
 /* 3rd bit shows piece color: 0 - white, 1 - black */
-#define TO_WHITE(c) ((c) & 7)
-#define TO_BLACK(c) ((c) | 8)
+#define TO_WHITE(pc) ((pc) & 7)
+#define TO_BLACK(pc) ((pc) | 8)
 #define DECOY(pc) ((pc) ^= 8) /* Change piece color, needs lvalue parameter. */
-#define IS_WHITE(c) ((c) && (((c) & 8) == 0))
-#define IS_BLACK(c) ((c) >> 3)
+#define IS_WHITE(pc) ((pc) && (((pc) & 8) == 0))
+#define IS_BLACK(pc) ((pc) >> 3)
 #define IS_COLOR(c,psq) (((psq) != NONE) && (c) == ((psq) >> 3))
 #define OPPONENT(c) ((!(c)))
 /** This macro requires PIECE arguments, empty squares will not do! */
