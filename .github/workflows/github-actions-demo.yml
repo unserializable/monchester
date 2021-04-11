@@ -4,8 +4,8 @@
 
 name: gcc+clang
 on:
-  workflow_dispatch:
-    branches: '1.0-branch'
+  push:
+    branches: 'gh-action-qs'
 
 jobs:
   build:
@@ -13,6 +13,8 @@ jobs:
     runs-on: [ubuntu-16.04, ubuntu-18.04, ubuntu-20.04]
     steps:
       - uses: actions/checkout@v2
+        with:
+        ref: '1.0-branch'
       - name: create debug build
         run: make clean monchester && echo && ./monchester --version
       - run: echo "🍏 This job's status is ${{ job.status }}."
