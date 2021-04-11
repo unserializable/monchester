@@ -1,4 +1,4 @@
-CC = $(shell command -v gcc-8 || command -v gcc-7 || command -v gcc)
+CC ?= $(shell command -v gcc-8 || command -v gcc-7 || command -v gcc)
 GCC_GT7 = $(shell (test $$($(CC) -dumpversion | cut -d. -f1) -ge 7 && echo true)  || echo false)
 ifeq "true" "$(GCC_GT7)"
 GCC7FLAGS = -Walloc-zero -Wformat-overflow
