@@ -1,0 +1,80 @@
+name: gcc+clang@linux+mac+windows
+on:
+  push:
+    branches: 'gh-action-qs'
+
+defaults:
+  run:
+    # 4.3.48(1)/4.4.20(1)/5.0.17(1) for Ubuntu 16/18/20.04
+    shell: bash
+
+jobs:
+  # LINUX
+  build-linux:
+    strategy:
+      fail-fast: false # Disabled to get full overview of build matrix statuses.
+      # HW specs for Win/Linux hosted runners: 2-core CPU, 7 GB RAM, 14 GB SSD disk
+      # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
+      max-parallel: 20
+      matrix:
+        os: [ 'ubuntu-16.04', 'ubuntu-18.04', 'ubuntu-20.04' ]
+        compiler: [ 'gcc', 'clang' ]
+        build: [ 'monchester', 'release' ]
+    name: ${{ matrix.os }} ${{ matrix.compiler }} ${{ matrix.build }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: '1.0-branch'
+      - name: make clean ${{ matrix.build }}
+        env:
+          CC: ${{ matrix.compiler }}
+        run: make clean ${{ matrix.build }} && ./monchester --version
+  # MAC
+  build-mac:
+    strategy:
+      fail-fast: false # Disabled to get full overview of build matrix statuses.
+      # GH actions' concurrency for macOS jobs is limited to 5 at the free/open-source tier.
+      # Regardless of tiers', a maximum of 256 jobs per workflow can be generated from matrix.
+      # https://docs.github.com/en/actions/reference/usage-limits-billing-and-administration
+      # HW specs for macOS hosted runners: 3-core CPU, 14 GB RAM, 14 GB SSD disk
+      # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
+      max-parallel: 5
+      matrix:
+        os: [ 'macos-10.15' ]
+        compiler: [ 'gcc-8', 'gcc-9', 'gcc-10', 'clang' ]
+        build: [ 'monchester', 'release' ]
+    name: ${{ matrix.os }} ${{ matrix.compiler }} ${{ matrix.build }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: '1.0-branch'
+      - name: make clean ${{ matrix.build }}
+        env:
+          CC: ${{ matrix.compiler }}
+        run: make clean ${{ matrix.build }} && ./monchester --version
+  # WINDOWS
+  build-windows:
+    strategy:
+      fail-fast: false # Disabled to get full overview of build matrix statuses.
+      # GH actions' concurrency for macOS jobs is limited to 5 at the free/open-source tier.
+      # Regardless of tiers', a maximum of 256 jobs per workflow can be generated from matrix.
+      # https://docs.github.com/en/actions/reference/usage-limits-billing-and-administration
+      # HW specs for Win/Linux hosted runners: 2-core CPU, 7 GB RAM, 14 GB SSD disk
+      # https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners
+      max-parallel: 20
+      matrix:
+        os: [ 'windows-2016', 'windows-2019' ]
+        compiler: [ 'gcc' ]
+        build: [ 'monchester', 'release' ]
+    name: ${{ matrix.os }} ${{ matrix.compiler }} ${{ matrix.build }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: '1.0-branch'
+      - name: make clean ${{ matrix.build }}
+        env:
+          CC: ${{ matrix.compiler }}
+        run: make clean ${{ matrix.build }} && ./monchester --version
