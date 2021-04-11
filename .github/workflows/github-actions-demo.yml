@@ -21,6 +21,4 @@ jobs:
         with:
           ref: '1.0-branch'
       - name: make clean ${{ matrix.build }}
-        env:
-          CC: ${{ matrix.compiler }}
-        run: make clean ${{ matrix.build }} && ./monchester --version
+        run: make CC=${{ matrix.compiler }} clean ${{ matrix.build }} && ./monchester --version
