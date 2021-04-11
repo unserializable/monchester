@@ -29,7 +29,7 @@ jobs:
       - name: make clean ${{ matrix.build }}
         env:
           CC: ${{ matrix.compiler }}
-        run: make clean ${{ matrix.build }} && ./monchester --version
+        run: make clean ${{ matrix.build }} && ./monchester --version && ./monchester --bench
   # MAC
   build-mac:
     strategy:
@@ -53,7 +53,7 @@ jobs:
       - name: make clean ${{ matrix.build }}
         env:
           CC: ${{ matrix.compiler }}
-        run: make clean ${{ matrix.build }} && ./monchester --version
+        run: make clean ${{ matrix.build }} && ./monchester --version && ./monchester --bench
   # WINDOWS
   build-windows:
     defaults:
@@ -83,4 +83,4 @@ jobs:
       - name: make clean ${{ matrix.build }}
         env:
           CC: ${{ matrix.compiler }}
-        run: make clean ${{ matrix.build }} && ./monchester --version
+        run: make clean ${{ matrix.build }} && ./monchester --version && ./monchester --bench
