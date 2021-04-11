@@ -7,7 +7,10 @@ endif
 OBJS = globals.o iomain.o xtdlib.o move.o brdlist.o compmove.o fen.o
 
 ARFLAGS = rcsD
-CFLAGS = -DDEBUG=1 -DDEBUG_EVAL=1 -g -Wformat -Wstrict-prototypes -Wall -fsanitize=address $(GCC7FLAGS)
+CFLAGS = -DDEBUG=1 -DDEBUG_EVAL=1 -g -Wformat -Wstrict-prototypes -Wall $(GCC7FLAGS)
+ifneq ($(OS),Windows_NT)
+CFLAGS += -fsanitize=address
+endif
 CFLAGS += -DMONCHESTER_VERSION="1.0.1-18-g8c8727f"
 CFLAGS += $(EXTFLAGS)
 
