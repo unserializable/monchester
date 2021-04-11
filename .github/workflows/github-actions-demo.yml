@@ -17,6 +17,7 @@ defaults:
 jobs:
   build:
     strategy:
+      fail-fast: false # Disabled to get full overview of build matrix statuses.
       # GH actions' concurrency for macOS jobs is limited to 5 at the free/open-source tier.
       # Regardless of tiers', a maximum of 256 jobs per workflow can be generated from matrix.
       # https://docs.github.com/en/actions/reference/usage-limits-billing-and-administration
