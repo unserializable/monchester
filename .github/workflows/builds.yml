@@ -57,8 +57,8 @@ jobs:
   # WINDOWS
   build-windows:
     defaults:
-	  run:
-	    shell: msys2 {0}
+      run:
+        shell: msys2 {0}
     strategy:
       fail-fast: false # Disabled to get full overview of build matrix statuses.
       # GH actions' concurrency for macOS jobs is limited to 5 at the free/open-source tier.
@@ -74,9 +74,9 @@ jobs:
     name: ${{ matrix.os }} ${{ matrix.compiler }} ${{ matrix.build }}
     runs-on: ${{ matrix.os }}
     steps:
-	  - uses: msys2/setup-msys2@v2
-	    with:
-		  install: gcc make
+      - uses: msys2/setup-msys2@v2
+        with:
+          install: gcc make
       - uses: actions/checkout@v2
         with:
           ref: '1.0-branch'
