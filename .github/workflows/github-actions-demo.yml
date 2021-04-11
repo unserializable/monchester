@@ -9,12 +9,15 @@ on:
 
 jobs:
   build:
+    strategy:
+      matrix:
+        platform: [ 'ubuntu-16.04', 'ubuntu-18.04', 'ubuntu-20.04' ]
     name: debug build
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v2
         with:
           ref: '1.0-branch'
-      - name: create debug build
+      - name: create debug build (gcc)
         run: make clean monchester && echo && ./monchester --version
       - run: echo "🍏 This job's status is ${{ job.status }}."
