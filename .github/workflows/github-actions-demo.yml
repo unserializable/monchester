@@ -31,11 +31,11 @@ jobs:
         build: [ 'monchester', 'release' ]
         # macOS 10.15 symlinks 'gcc' to clang, but has aliases to gcc-(8|9|10) available.
         exclude:
-          os: 'macos-10.15'
-          compiler: 'gcc'
+          - os: 'macos-10.15'
+            compiler: 'gcc'
         include:
-          os: 'macos-10.15'
-          compiler: [ 'gcc-8', 'gcc-9', 'gcc-10' ]
+          - os: 'macos-10.15'
+            compiler: [ 'gcc-8', 'gcc-9', 'gcc-10' ]
     name: ${{ matrix.compiler }} ${{ matrix.build }} build (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     steps:
