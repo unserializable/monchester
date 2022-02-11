@@ -165,7 +165,7 @@ uintmax_t upow(uintmax_t n, uint8_t x) {
 }
 
 /* Selects legal move for color on the move, returns NULL when no moves (check or stalemate). */
-struct EngineMove *select_move(struct BoardStateList *bsl, uint8_t depth, const struct TimeControl *tc)
+struct EngineMove *select_move(struct BoardStateList *bsl, uint8_t depth, const struct TimeControl *tc, bool is_playing)
 {
 #if FEATURE_KEEP_ALL_PVS
 	PV *all_pvs = NULL;
@@ -196,7 +196,10 @@ struct EngineMove *select_move(struct BoardStateList *bsl, uint8_t depth, const 
 	uintmax_t est_nc = (upow(gen_move_count, depth + 1) / 5) * 31;
 	uintmax_t est_ms = ((long double)est_nc * 1000L / g_engine_nps);
 
-	while (tc && (tc->time_left > 0) && (tc->time_left < est_ms)) { /* #59. If time is zero or negative, do not care. */
+	if (gen_move_count == 1 && is_playing) /* #99, GH#14. Single move. Just do it. Nevermind score-graph extremum. */
+		depth = 0, est_nc = 1;
+
+	while (depth > 0 && tc && (tc->time_left > 0) && (tc->time_left < est_ms)) { /* #59. If time is zero or negative, do not care. */
 #if DEBUG
 		printf("#   DEPTH %d, est_ms was %lu for %lu nodes, time left %d ms.\n", depth + 1, est_ms, est_nc, tc->time_left);
 #endif

@@ -47,7 +47,7 @@ clock_t bench(struct BoardState benchboard, uint8_t depth) {
 	struct BoardStateList bsl = { .State = benchboard };
 
 	clock_start = clock();
-	throwaway = select_move(&bsl, depth, NULL);
+	throwaway = select_move(&bsl, depth, NULL, false);
 	clock_end = clock();
 
 	xfree_engine_move(throwaway);
@@ -386,7 +386,7 @@ int main(int argc, const char *argv[])
 		if (g_gamestate == GAME_IN_PROGRESS) {
 			if (Computer == g_players[CurrentBoard->State.Active].type) {
 				char algebraic_move[6];
-				em = select_move(CurrentBoard, g_engine_conf.depth_default, &g_game_time);
+				em = select_move(CurrentBoard, g_engine_conf.depth_default, &g_game_time, true);
 				to_algebraic(algebraic_move, em, &CurrentBoard->State);
 
 				if (!g_cecp)
@@ -562,7 +562,7 @@ int main(int argc, const char *argv[])
 
 		else if (!strcmp(command, "hint") && g_cecp) {
 			xfree(command);
-			struct EngineMove* hint = select_move(CurrentBoard, 1, NULL);
+			struct EngineMove* hint = select_move(CurrentBoard, 1, NULL, true);
 			if (hint) {
 				char algebraic_move[6];
 				to_algebraic(algebraic_move, hint, &CurrentBoard->State);

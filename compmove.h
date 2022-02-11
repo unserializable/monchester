@@ -23,6 +23,6 @@
 #include "features.h"
 #include "types.h"
 
-struct EngineMove *select_move(struct BoardStateList *bsl, uint8_t, const struct TimeControl *);
+struct EngineMove *select_move(struct BoardStateList *bsl, uint8_t, const struct TimeControl *, bool);
 
 #endif
