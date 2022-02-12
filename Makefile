@@ -11,12 +11,12 @@ CFLAGS = -DDEBUG=1 -DDEBUG_EVAL=1 -g -Wformat -Wstrict-prototypes -Wall $(GCC7FL
 ifneq ($(OS),Windows_NT)
 CFLAGS += -fsanitize=address
 endif
-CFLAGS += -DMONCHESTER_VERSION="1.0.1-18-g8c8727f"
+CFLAGS += -DMONCHESTER_VERSION="1.0.1-22-g2464d69"
 CFLAGS += $(EXTFLAGS)
 
 # Issue #1@GH -- use 'release' as the default 'make' target
 release: CFLAGS=-DNDEBUG -Os -Wformat -Wstrict-prototypes -Wall $(GCC7FLAGS)
-release: CFLAGS += -DMONCHESTER_VERSION="1.0.1-18-g8c8727f"
+release: CFLAGS += -DMONCHESTER_VERSION="1.0.1-22-g2464d69"
 release: CFLAGS += $(EXTFLAGS)
 release: monchester
 
