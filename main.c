@@ -227,6 +227,7 @@ void command_protover_cecp(void)
 		"name=1 "
 		"setboard=1 "
 		"ping=1 "
+		"debug=1 " /* Safeguard from legacy like 'draw' interpretations anywhere in line (#113, GH#16). */
 		"edit=0 "
 		"memory=0 "
 		"usermove=0 "
