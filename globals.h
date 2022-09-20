@@ -23,7 +23,7 @@
 #define CQUOTE(x) _CQ(x)
 
 #ifndef MONCHESTER_VERSION
- #define PROGRAM_VERSION "1.0.1-24-g97c50f4"
+ #define PROGRAM_VERSION "1.0.1-26-g271a034"
 #else
  #define PROGRAM_VERSION CQUOTE(MONCHESTER_VERSION)
 #endif
