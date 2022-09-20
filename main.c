@@ -646,6 +646,12 @@ int main(int argc, const char *argv[])
 			continue;
 		}
 
+		else if (!strncmp(command, "rating", 6) && g_cecp) {
+			/* Recognize 'rating' command as no-op, (#118, GH#17). */
+			xfree(command);
+			continue;
+		}
+
 		else if (!strncmp(command, "st", 2) && g_cecp) {
 			/* No support for this, but do not complain about command. */
 		}
